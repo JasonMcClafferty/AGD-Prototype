@@ -274,3 +274,10 @@ function myDebug() {
     var dirStr = unitVector(directionVector(chX + chW/2, chY + chH/2, plX, player)).toString();
     ctx. fillText(dirStr, 4000, 150);
 } */
+
+/*
+*   TODO: Get vector to rotate around player based on arrow keys
+*   TODO: Get Player to move one vector magnitude per frame in vector direction.
+*
+*
+ */
