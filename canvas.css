@@ -1,0 +1,76 @@
+
+body {
+
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 200;
+
+    background-color: darkorange;
+}
+
+.main {
+
+}
+
+.header {
+    height: 5%;
+
+    text-align: center;
+}
+
+#header-text {
+    margin: 25px;
+    color: #EEEDDB;
+    text-shadow: 1.5px 1px darkred;
+}
+
+.footer {
+    height: 25%;
+}
+
+.sidebar {
+    display: inline;
+    width: 300px;
+}
+
+#canvas {
+
+    border: darkred solid 5px;
+    background-color: cornsilk;
+
+    width: 800px;
+    height: 800px;
+
+    display: block;
+    margin: 0 auto;
+    padding: 0;
+
+}
+
+.menu-button {
+
+    border: darkslategray solid 5px;
+    background-color: cornsilk;
+
+    width: 270px;
+    height: 100px;
+
+    display: block;
+    margin: 0 auto;
+    padding: 0;
+
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    font-size: large;
+    color: darkslategray;
+
+}
+
+#btns {
+
+    margin: auto;
+    padding: 20% 2%;
+}
+
+
+.dbg {
+    border: 5px darkred;
+}
