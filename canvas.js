@@ -9,8 +9,8 @@ var player = {
 
 var vector = {
     move : {
-        x : 0,
-        y : 0,
+        x : 100,
+        y : 100,
         mag : 1 //use unit vector here
     }
 }
@@ -185,11 +185,8 @@ function render () {
     // which the browser can push frames.
     clCanvas();
     draw();
-
-
-
 }
-ototypr
+
 function clCanvas() {
 
     ctx = document.getElementById('canvas').getContext('2d');
@@ -211,7 +208,6 @@ function draw() {
 
 function drawPlayer() {
 
-
     ctx.beginPath();
     ctx.arc(player.x, player.y, 100, 0,2 * Math.PI);
     ctx.fillStyle = '#739cff';
@@ -221,7 +217,13 @@ function drawPlayer() {
 
 function drawVector() {
 
-    ctx = document.getElementById('canvas').getContext('2d');
+    ctx.beginPath();
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = "red";
+
+    ctx.moveTo(player.x, player.y);
+    ctx.lineTo(player.x + vector.move.x, player.y + vector.move.y);
+    ctx.stroke();
 
 }
 
