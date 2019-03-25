@@ -11,7 +11,8 @@ var vector = {
     move : {
         x : 100,
         y : 100,
-        mag : 1 //use unit vector here
+        mag : 1, //use unit vector here
+        rSpd : 50
     }
 }
 
@@ -146,37 +147,52 @@ function update() {
 `*/
 
     if (keys.up) {
+
+        // forward
         player.y -= player.speed;
 
-        if (player.y < -80) {
-            player.y = 5000;
-        }
+
     }
 
     if (keys.down) {
 
+        // reverse
         player.y += player.speed;
 
-        if (player.y > 5000) {
-            player.y = 0;
-        }
+
     }
 
     if (keys.left) {
-        player.x -= player.speed;
+        //rotate counterclockwise
+        vector.move.x = (vector.move.x * Math.cos(Math.PI/vector.move.rSpd) + vector.move.y * Math.sin(Math.PI/vector.move.rSpd));
+        vector.move.y =  (vector.move.y * Math.cos(Math.PI/vector.move.rSpd) - vector.move.x * Math.sin(Math.PI/vector.move.rSpd));
 
-        if (player.x < 0) {
-            player.x = 5000;
-        }
     }
 
     if (keys.right) {
-        player.x += player.speed;
-
-        if (player.x > 5000) {
-            player.x = -100;
-        }
+        //rotate clockwise
+        vector.move.x = (vector.move.x * Math.cos(Math.PI/vector.move.rSpd) - vector.move.y * Math.sin(Math.PI/vector.move.rSpd));
+        vector.move.y =  (vector.move.y * Math.cos(Math.PI/vector.move.rSpd) + vector.move.x * Math.sin(Math.PI/vector.move.rSpd));
     }
+
+    boundsCheck();
+}
+
+function boundsCheck() {
+
+
+    if (player.x > 5000) {
+        player.x = -100;
+    }
+
+    if (player.x < 0) {
+        player.x = 5000;
+    }
+
+    if (player.y < -80) {
+        player.y = 5000;
+    }
+
 }
 
 function render () {
@@ -227,10 +243,6 @@ function drawVector() {
 
 }
 
-function calculateMoveVector() {
-
-
-}
 
 /*
     Finding the direction vector to give the chaser
