@@ -11,15 +11,54 @@ var player = {
     }
 }
 
+/*
+    @members:
+        - move : player's movement vector
+            - x : x component of players movement vector
+            - y : y component of player's movement vector
+
+        - mag : magnitude of player's movement vector
+        - unit : normalised movement vector
+
+        - rSp : 1/(rate at which player turns)
+
+ */
 var vector = {
     move : {
         x : 100,
         y : 100,
+
         mag : (Math.sqrt(
             (this.x * this.x)
             + (this.y * this.y))),
+        unit : unitVector([this.x, this.y]),
+
+
         rSpd : 50
     }
+}
+
+var enemy = {
+
+}
+
+/*
+    projectile object prototype
+    has instantiation location, direction & speed
+
+    needs size & shape data for collision detection.
+
+ */
+var projectile = {
+    x : player.x,
+    y : player.y,
+
+    directionVec : {
+        x : vector.move.unit[0],
+        y : vector.move.unit[1]
+    },
+
+    speed : 200
 }
 
 var world = {
@@ -131,6 +170,7 @@ function setup() {
 
 }
 
+
 function update() {
     //console.log('update');
 
@@ -159,10 +199,6 @@ function update() {
     boundsCheck();
 }
 
-
-
-
-
 function render () {
 
     // clear and draw the canvas - coupled to the rate at
@@ -170,6 +206,7 @@ function render () {
     clCanvas();
     draw();
 }
+
 function clCanvas() {
 
     ctx = document.getElementById('canvas').getContext('2d');
@@ -232,6 +269,13 @@ function myDebug() {
 
 }
 
+function shoot() {
+
+}
+
+
+/******** REGIONS ********/
+
 /*
 *   TODO: Get vector to rotate around player based on arrow keys
 *       **DONE**
@@ -245,7 +289,6 @@ function myDebug() {
 *
  */
 
-/******** REGIONS ********/
 
 //region Physics
 function boundsCheck() {
