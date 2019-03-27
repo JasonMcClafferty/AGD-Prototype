@@ -3,15 +3,21 @@
 var player = {
     x : 400,
     y : 400,
-    speed : 30,
-    colliding : false
+    speed : 50,
+    colliding : false,
+
+    toString : function () {
+        return "( " + this.x + ", "  + this.y + " )";
+    }
 }
 
 var vector = {
     move : {
         x : 100,
         y : 100,
-        mag : 1, //use unit vector here
+        mag : (Math.sqrt(
+            (this.x * this.x)
+            + (this.y * this.y))),
         rSpd : 50
     }
 }
@@ -146,54 +152,16 @@ function update() {
     }
 `*/
 
-    if (keys.up) {
-
-        // forward
-        player.y -= player.speed;
 
 
-    }
 
-    if (keys.down) {
-
-        // reverse
-        player.y += player.speed;
-
-
-    }
-
-    if (keys.left) {
-        //rotate counterclockwise
-        vector.move.x = (vector.move.x * Math.cos(Math.PI/vector.move.rSpd) + vector.move.y * Math.sin(Math.PI/vector.move.rSpd));
-        vector.move.y =  (vector.move.y * Math.cos(Math.PI/vector.move.rSpd) - vector.move.x * Math.sin(Math.PI/vector.move.rSpd));
-
-    }
-
-    if (keys.right) {
-        //rotate clockwise
-        vector.move.x = (vector.move.x * Math.cos(Math.PI/vector.move.rSpd) - vector.move.y * Math.sin(Math.PI/vector.move.rSpd));
-        vector.move.y =  (vector.move.y * Math.cos(Math.PI/vector.move.rSpd) + vector.move.x * Math.sin(Math.PI/vector.move.rSpd));
-    }
-
+    input();
     boundsCheck();
 }
 
-function boundsCheck() {
 
 
-    if (player.x > 5000) {
-        player.x = -100;
-    }
 
-    if (player.x < 0) {
-        player.x = 5000;
-    }
-
-    if (player.y < -80) {
-        player.y = 5000;
-    }
-
-}
 
 function render () {
 
@@ -202,7 +170,6 @@ function render () {
     clCanvas();
     draw();
 }
-
 function clCanvas() {
 
     ctx = document.getElementById('canvas').getContext('2d');
@@ -218,7 +185,11 @@ function draw() {
     drawPlayer();
     drawVector();
 
-    //myDebug();
+    //drawAttack();
+
+    //drawEnemy();
+
+    myDebug();
 
 }
 
@@ -230,26 +201,140 @@ function drawPlayer() {
     ctx.fill();
 
 }
-
 function drawVector() {
+
+    var uVec = unitVector([vector.move.x, vector.move.y]);
 
     ctx.beginPath();
     ctx.lineWidth = 8;
     ctx.strokeStyle = "red";
 
     ctx.moveTo(player.x, player.y);
-    ctx.lineTo(player.x + vector.move.x, player.y + vector.move.y);
+    ctx.lineTo(player.x + (uVec[0] * 100), player.y + (uVec[1] * 100));
     ctx.stroke();
 
 }
 
 
-/*
-    Finding the direction vector to give the chaser
-    a movement direction, towards the player's
-    current location.
 
+function myDebug() {
+
+    // Draw the normalized direction vector.
+    var movementVec = unitVector([vector.move.x, vector.move.y]).toString();
+    var playerPos = player.toString();
+
+
+    // drawing code
+    ctx.font = "100px monospace";
+
+    ctx.fillText(movementVec, 3000, 150);
+    ctx.fillText(playerPos, 3000, 300);
+
+}
+
+/*
+*   TODO: Get vector to rotate around player based on arrow keys
+*       **DONE**
+*
+*
+*   TODO: Get Player to move one vector magnitude per frame in vector direction.
+*       **DONE**
+*
+*   TODO: Figure out why the vector decreases in magnitude as I turn.
+*       ie - if it were a clock, the hands would be getting shorter.
+*
  */
+
+/******** REGIONS ********/
+
+//region Physics
+function boundsCheck() {
+
+
+    if (player.x > 5000) {
+        player.x = 0;
+        return;
+    }
+
+    if (player.x < 0) {
+        player.x = 5000;
+        return;
+    }
+
+    if (player.y < 0) {
+        player.y = 5000;
+        return;
+    }
+
+    if (player.y  > 5000) {
+        player.y = 0;
+        return;
+    }
+
+}
+function input() {
+
+    if (keys.up) {
+
+        // unit vector
+        var uVec = unitVector([vector.move.x, vector.move.y]);
+
+        // forward
+        player.x += Math.round(uVec[0] * player.speed);
+        player.y += Math.round(uVec[1] * player.speed);
+
+
+
+    }
+
+    if (keys.down) {
+
+        // reverse
+        player.y += player.speed;
+
+
+    }
+
+    if (keys.left) {
+        //rotate counterclockwise
+        vector.move.x = (
+            vector.move.x * Math.cos(Math.PI/vector.move.rSpd)
+            + vector.move.y * Math.sin(Math.PI/vector.move.rSpd)
+        );
+
+        vector.move.y = (
+            vector.move.y * Math.cos(Math.PI/vector.move.rSpd)
+            - vector.move.x * Math.sin(Math.PI/vector.move.rSpd)
+        );
+
+
+    }
+
+    if (keys.right) {
+        /* rotate clockwise
+         * Somethings changing the length of the vector ?????
+         */
+        vector.move.x = (
+            vector.move.x * Math.cos(3.14/vector.move.rSpd)
+            - vector.move.y * Math.sin(3.14/vector.move.rSpd)
+        );
+
+        vector.move.y = (
+            vector.move.y * Math.cos(Math.PI/vector.move.rSpd)
+            + vector.move.x * Math.sin(Math.PI/vector.move.rSpd)
+        );
+    }
+}
+//endregion
+
+
+//region vectors
+ /*
+@returns a 2d point to point vector
+Finding the direction vector to give the chaser
+a movement direction, towards the player's
+current location.
+*/
 function directionVector(x, y, a, b) {
 
     var Vdx = a - x;
@@ -258,38 +343,19 @@ function directionVector(x, y, a, b) {
     return [Vdx, Vdy];
 }
 
-/* Finding unit vector to scale the direction
+/*  @return unit vector from origin to [x,y]
+ * Finding unit vector to scale the direction
  * vector by a given speed. Accepts an array to
  * suit the output of the direction vector method.
  *
- *  The vector is rounded because when travelling
- *  diagonally the unit vector becomes a fraction.
- *
- *  TODO -NOTE-
- *      Remember that the unit vector is rounded,
- *      it may be something that works itself out
- *     when more math is applied.
  */
 function unitVector(x) {
 
-    var i = x[0];
-    var j = x[1];
+    var i = x[0]*10;
+    var j = x[1]*10;
 
     var mag =  Math.sqrt((i*i) + (j*j));
 
-    return [Math.round(i/mag), Math.round(j/mag)];
+    return [i/mag, j/mag];
 }
-
-/*
-function myDebug() {
-    // Draw the normalized direction vector.
-    var dirStr = unitVector(directionVector(chX + chW/2, chY + chH/2, plX, player)).toString();
-    ctx. fillText(dirStr, 4000, 150);
-} */
-
-/*
-*   TODO: Get vector to rotate around player based on arrow keys
-*   TODO: Get Player to move one vector magnitude per frame in vector direction.
-*
-*
- */
+//endregion
