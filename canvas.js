@@ -38,10 +38,6 @@ var vector = {
     }
 }
 
-var enemy = {
-
-}
-
 /*
     projectile object prototype
     has instantiation location, direction & speed
@@ -49,17 +45,35 @@ var enemy = {
     needs size & shape data for collision detection.
 
  */
-var projectile = {
-    x : player.x,
-    y : player.y,
+function projectile(speed, dirX, dirY)  {
 
-    directionVec : {
-        x : vector.move.unit[0],
-        y : vector.move.unit[1]
-    },
+    this.direction = {
+        x : 0,
+        y : 0,
+        toString : function() {
+            return " x: " + this.x + " y: " + this.y;
+        }
+    };
 
-    speed : 200
+    this.x = player.x;
+    this.y = player.y;
+
+    this.size = 10;
+
+    this.direction.x = dirX;
+    this.direction.y = dirY;
+
+    this.speed = speed;
+
+    this.vector = (dirX, dirY) * this.speed;
+    this.lifetime = 3;
+
+    this.toString = function() {
+        return "speed: " + this.speed + " Dir: " + this.direction;
+    }
 }
+
+var projectiles = [];
 
 var world = {
     acceleration: 2,
@@ -104,7 +118,7 @@ window.onkeydown = function(e) {
 window.onkeyup = function(e) {
 
 
-    var kc = e.keyCode;
+    let kc = e.keyCode;
 
     if(kc === 65) {
         keys.left = false;
@@ -162,6 +176,10 @@ function setup() {
             clCanvas();
             window.cancelAnimationFrame(stopGame);
         }
+
+        if (event.keyCode == 66) {
+            shoot();
+        }
     });
 
 
@@ -169,7 +187,6 @@ function setup() {
     main();
 
 }
-
 
 function update() {
     //console.log('update');
@@ -253,7 +270,6 @@ function drawVector() {
 }
 
 
-
 function myDebug() {
 
     // Draw the normalized direction vector.
@@ -269,20 +285,25 @@ function myDebug() {
 
 }
 
+
 function shoot() {
 
-}
+    const bulletDirX = vector.move.x;
+    const bulletDirY = vector.move.y;
 
+    let bullet = new projectile(100, bulletDirX, bulletDirY);
+
+
+
+    projectiles[projectiles.length] = bullet;
+
+    alert ("shooting " + projectiles[projectiles.length-1].toString());
+
+}
 
 /******** REGIONS ********/
 
 /*
-*   TODO: Get vector to rotate around player based on arrow keys
-*       **DONE**
-*
-*
-*   TODO: Get Player to move one vector magnitude per frame in vector direction.
-*       **DONE**
 *
 *   TODO: Figure out why the vector decreases in magnitude as I turn.
 *       ie - if it were a clock, the hands would be getting shorter.
@@ -332,8 +353,11 @@ function input() {
 
     if (keys.down) {
 
+        let uVec = unitVector([vector.move.x, vector.move.y]);
+
         // reverse
-        player.y += player.speed;
+        player.x -= Math.round(uVec[0] * player.speed);
+        player.y -= Math.round(uVec[1] * player.speed);
 
 
     }
