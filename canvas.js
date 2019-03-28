@@ -45,7 +45,12 @@ var vector = {
     needs size & shape data for collision detection.
 
  */
-function projectile(speed, dirX, dirY)  {
+function Projectile(speed, dirX, dirY)  {
+
+    this.x = player.x;
+    this.y = player.y;
+
+    this.size = 10;
 
     this.direction = {
         x : 0,
@@ -54,11 +59,6 @@ function projectile(speed, dirX, dirY)  {
             return " x: " + this.x + " y: " + this.y;
         }
     };
-
-    this.x = player.x;
-    this.y = player.y;
-
-    this.size = 10;
 
     this.direction.x = dirX;
     this.direction.y = dirY;
@@ -182,10 +182,8 @@ function setup() {
         }
     });
 
-
     // Game loop
     main();
-
 }
 
 function update() {
@@ -211,6 +209,8 @@ function update() {
 
 
 
+
+    projectileMechanics();
 
     input();
     boundsCheck();
@@ -239,7 +239,7 @@ function draw() {
     drawPlayer();
     drawVector();
 
-    //drawAttack();
+    drawProjectile();
 
     //drawEnemy();
 
@@ -253,6 +253,7 @@ function drawPlayer() {
     ctx.arc(player.x, player.y, 100, 0,2 * Math.PI);
     ctx.fillStyle = '#739cff';
     ctx.fill();
+    ctx.closePath();
 
 }
 function drawVector() {
@@ -266,9 +267,19 @@ function drawVector() {
     ctx.moveTo(player.x, player.y);
     ctx.lineTo(player.x + (uVec[0] * 100), player.y + (uVec[1] * 100));
     ctx.stroke();
+    ctx.closePath();
 
 }
 
+function drawProjectile () {
+    projectiles.forEach(function(p) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y,   p.size * 2, 0, 2 * Math.PI);
+        ctx.fillstyle = '#71771d';
+        ctx.fill();
+        ctx.closePath();
+    });
+}
 
 function myDebug() {
 
@@ -291,13 +302,13 @@ function shoot() {
     const bulletDirX = vector.move.x;
     const bulletDirY = vector.move.y;
 
-    let bullet = new projectile(100, bulletDirX, bulletDirY);
+    let bullet = new Projectile(100, bulletDirX, bulletDirY);
 
 
 
     projectiles[projectiles.length] = bullet;
 
-    alert ("shooting " + projectiles[projectiles.length-1].toString());
+    //alert ("shooting " + projectiles[projectiles.length-1].toString());
 
 }
 
@@ -341,7 +352,7 @@ function input() {
     if (keys.up) {
 
         // unit vector
-        var uVec = unitVector([vector.move.x, vector.move.y]);
+        let uVec = unitVector([vector.move.x, vector.move.y]);
 
         // forward
         player.x += Math.round(uVec[0] * player.speed);
@@ -350,7 +361,6 @@ function input() {
 
 
     }
-
     if (keys.down) {
 
         let uVec = unitVector([vector.move.x, vector.move.y]);
@@ -361,7 +371,6 @@ function input() {
 
 
     }
-
     if (keys.left) {
         //rotate counterclockwise
         vector.move.x = (
@@ -376,7 +385,6 @@ function input() {
 
 
     }
-
     if (keys.right) {
         /* rotate clockwise
          * Somethings changing the length of the vector ?????
@@ -392,8 +400,19 @@ function input() {
         );
     }
 }
-//endregion
 
+// Prototype code for propagating all the projectiles
+//
+function projectileMechanics() {
+    projectiles.forEach(function(p)
+    {
+        const uVec = unitVector([p.direction.x, p.direction.y]);
+
+        p.x += uVec[0] * p.speed;
+        p.y += uVec[1] * p.speed;
+    });
+}
+//endregion
 
 //region vectors
  /*
