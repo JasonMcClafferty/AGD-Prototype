@@ -239,11 +239,13 @@ function draw() {
     drawPlayer();
     drawVector();
 
+
+
+    drawEnemy();
+
     drawProjectile();
 
-    //drawEnemy();
-
-    myDebug();
+    //myDebug();
 
 }
 
@@ -258,7 +260,7 @@ function drawPlayer() {
 }
 function drawVector() {
 
-    var uVec = unitVector([vector.move.x, vector.move.y]);
+    let  uVec = unitVector([vector.move.x, vector.move.y]);
 
     ctx.beginPath();
     ctx.lineWidth = 8;
@@ -270,6 +272,16 @@ function drawVector() {
     ctx.closePath();
 
 }
+
+function drawEnemy() {
+    ctx.beginPath();
+    ctx.arc(3000, 3000, 200, 0,(2 * Math.PI) - Math.PI/2.2);
+    ctx.strokeStyle = 'darkslategrey';
+    ctx.lineWidth = 100;
+    ctx.stroke();
+    ctx.closePath();
+}
+
 
 function drawProjectile () {
     projectiles.forEach(function(p) {
@@ -284,8 +296,8 @@ function drawProjectile () {
 function myDebug() {
 
     // Draw the normalized direction vector.
-    var movementVec = unitVector([vector.move.x, vector.move.y]).toString();
-    var playerPos = player.toString();
+    let movementVec = unitVector([vector.move.x, vector.move.y]).toString();
+    let playerPos = player.toString();
 
 
     // drawing code
@@ -347,6 +359,8 @@ function boundsCheck() {
     }
 
 }
+
+// Code for reading user input through keydown events
 function input() {
 
     if (keys.up) {
@@ -401,15 +415,21 @@ function input() {
     }
 }
 
-// Prototype code for propagating all the projectiles
-//
+//function for layer based collision detection
+function collisionCheck() {
+
+}
+
+// Code for propagating all the projectiles
 function projectileMechanics() {
     projectiles.forEach(function(p)
     {
         const uVec = unitVector([p.direction.x, p.direction.y]);
 
-        p.x += uVec[0] * p.speed;
-        p.y += uVec[1] * p.speed;
+        p.x += uVec[0] * (7 * p.speed/8);
+        p.y += uVec[1] * (7 * p.speed/8);
+
+        p.size += 2;
     });
 }
 //endregion
