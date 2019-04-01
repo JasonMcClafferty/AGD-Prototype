@@ -1,5 +1,4 @@
 
-
 var player = {
     x : 400,
     y : 400,
@@ -37,6 +36,26 @@ var vector = {
         rSpd : 50
     }
 }
+
+
+/*
+    Constructor for enemy - maybe include a type later.
+
+ */
+var Enemy = function(x, y) {
+
+    this.x =  x;
+    this.y = y;
+
+    this.speed  = 10;
+    this.direction = unitVector(player.x - this.x, player.y - this.y);
+
+    this.toString = function() {
+        return 'Enemy : ' + this.x + ' ' + this.y + ' direction: ' +  this.direction;
+    }
+}
+
+var enemies = [];
 
 /*
     projectile object prototype
@@ -275,7 +294,7 @@ function drawVector() {
 
 function drawEnemy() {
     ctx.beginPath();
-    ctx.arc(3000, 3000, 200, 0,(2 * Math.PI) - Math.PI/2.2);
+    ctx.arc(3000, 3000, 200, 0,(2 * Math.PI));
     ctx.strokeStyle = 'darkslategrey';
     ctx.lineWidth = 100;
     ctx.stroke();
@@ -420,6 +439,10 @@ function collisionCheck() {
 
 }
 
+function enemyMove() {
+
+}
+
 // Code for propagating all the projectiles
 function projectileMechanics() {
     projectiles.forEach(function(p)
@@ -465,3 +488,7 @@ function unitVector(x) {
     return [i/mag, j/mag];
 }
 //endregion
+
+
+
+// TODO: Sort out object pooling
