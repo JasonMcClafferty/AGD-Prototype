@@ -1,6 +1,11 @@
 
+/*
+    @author: Jason Mc Clafferty
 
-var player = {
+    @module: Advanced Game Design
+ */
+
+let player = {
     x : 400,
     y : 400,
     speed : 50,
@@ -23,7 +28,7 @@ var player = {
         - rSp : 1/(rate at which player turns)
 
  */
-var vector = {
+let vector = {
     move : {
         x : 100,
         y : 100,
@@ -45,7 +50,9 @@ var vector = {
     needs size & shape data for collision detection.
 
  */
-function Projectile(speed, dirX, dirY)  {
+function Projectile(speed, dirX, dirY, time)  {
+
+    this.born = time;
 
     this.x = player.x;
     this.y = player.y;
@@ -73,7 +80,7 @@ function Projectile(speed, dirX, dirY)  {
     }
 }
 
-var projectiles = [];
+let projectiles = [];
 
 var world = {
     acceleration: 2,
@@ -85,6 +92,8 @@ var ctx, stopGame;
 var keys = {};
 
 var dir;
+
+var cooldown_bar = 0;
 
 // Making sure the page is set up correctly before the game starts.
 window.onload = setup;
@@ -178,13 +187,50 @@ function setup() {
         }
 
         if (event.keyCode == 66) {
-            shoot();
+
+            // shoot edits a global static variable with the shoot time after it shoots,
+            // cooledDown checks if the current time is greater than that global variable plus the delay.
+
+            if (cooledDown()) {
+                shoot();
+            }
         }
     });
 
     // Game loop
     main();
 }
+
+let cooledDown = function() {
+
+    if (cooldown_bar < 0) {
+        cooldown_bar = 0;
+    }
+
+    if (cooldown_bar ==0) {
+        //alert("cooled down");
+        return true;
+    }
+
+    else {
+        return false;
+    }
+}
+
+function shoot() {
+
+    const bulletDirX = vector.move.x;
+    const bulletDirY = vector.move.y;
+
+    // get the instantiation time in seconds
+    let bullet = new Projectile(100, bulletDirX, bulletDirY, new Date().getSeconds());
+
+    projectiles[projectiles.length] = bullet;
+
+    cooldown_bar = 18;
+
+}
+
 
 function update() {
     //console.log('update');
@@ -205,17 +251,18 @@ function update() {
         && !keys.left) {
         player.speed = 20;
     }
-`*/
+    */
 
+    cooldown_bar -=1;
 
-
-
+    if (cooldown_bar < 0) {
+    cooldown_bar = 0;
+    }
     projectileMechanics();
 
     input();
     boundsCheck();
 }
-
 function render () {
 
     // clear and draw the canvas - coupled to the rate at
@@ -230,7 +277,6 @@ function clCanvas() {
     ctx.clearRect(0, 0, 6000, 6000);
 
 }
-
 function draw() {
 
     ctx = document.getElementById('canvas').getContext('2d');
@@ -245,10 +291,9 @@ function draw() {
 
     drawProjectile();
 
-    //myDebug();
+    myDebug();
 
 }
-
 function drawPlayer() {
 
     ctx.beginPath();
@@ -272,7 +317,6 @@ function drawVector() {
     ctx.closePath();
 
 }
-
 function drawEnemy() {
     ctx.beginPath();
     ctx.arc(3000, 3000, 200, 0,(2 * Math.PI) - Math.PI/2.2);
@@ -281,8 +325,6 @@ function drawEnemy() {
     ctx.stroke();
     ctx.closePath();
 }
-
-
 function drawProjectile () {
     projectiles.forEach(function(p) {
         ctx.beginPath();
@@ -306,32 +348,17 @@ function myDebug() {
     ctx.fillText(movementVec, 3000, 150);
     ctx.fillText(playerPos, 3000, 300);
 
-}
-
-
-function shoot() {
-
-    const bulletDirX = vector.move.x;
-    const bulletDirY = vector.move.y;
-
-    let bullet = new Projectile(100, bulletDirX, bulletDirY);
-
-
-
-    projectiles[projectiles.length] = bullet;
-
-    //alert ("shooting " + projectiles[projectiles.length-1].toString());
+    // cooldown functionality
+    ctx.fillText(cooldown_bar, 4500, 4850);
 
 }
+
 
 /******** REGIONS ********/
 
-/*
-*
-*   TODO: Figure out why the vector decreases in magnitude as I turn.
-*       ie - if it were a clock, the hands would be getting shorter.
-*
- */
+    /*
+     *
+     */
 
 
 //region Physics
@@ -422,14 +449,21 @@ function collisionCheck() {
 
 // Code for propagating all the projectiles
 function projectileMechanics() {
-    projectiles.forEach(function(p)
-    {
+    projectiles.forEach(function(p) {
+
+        // Remove the current projectile if it's been alive for longer than it's life time.
+        // TODO: MAKE THIS WORK
+        if ((new Date().getSeconds()) - p.born > p.lifetime) {
+            delete this.p;
+        }
+
         const uVec = unitVector([p.direction.x, p.direction.y]);
 
-        p.x += uVec[0] * (7 * p.speed/8);
-        p.y += uVec[1] * (7 * p.speed/8);
+        p.x += uVec[0] * (7 * p.speed / 8);
+        p.y += uVec[1] * (7 * p.speed / 8);
 
         p.size += 2;
+
     });
 }
 //endregion
@@ -443,8 +477,8 @@ current location.
 */
 function directionVector(x, y, a, b) {
 
-    var Vdx = a - x;
-    var Vdy = b - y;
+    let Vdx = a - x;
+    let Vdy = b - y;
 
     return [Vdx, Vdy];
 }
