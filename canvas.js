@@ -141,9 +141,12 @@ window.onkeydown = function(e) {
     if (kc === 83) {
         keys.down = true;
     }
+
+    if (kc === 66) {
+        keys.shoot = true;
+    }
 }
 window.onkeyup = function(e) {
-
 
     let kc = e.keyCode;
 
@@ -162,6 +165,10 @@ window.onkeyup = function(e) {
         keys.down = false;
     }
 
+    if (kc === 66) {
+        keys.shoot = false;
+    }
+
 }
 
 // couple the game loop to the browser event loop
@@ -178,10 +185,11 @@ function setup() {
     ctx = document.getElementById('canvas').getContext('2d');
 
     keys = {
-        up: false,
-        down: false,
-        left: false,
-        right: false
+        up : false,
+        down : false,
+        left : false,
+        right : false,
+        shoot : false
     }
 
     player.x = 500;
@@ -198,20 +206,13 @@ function setup() {
     document.addEventListener('keydown', function(event) {
 
         if (event.keyCode == 32) {
+            event.preventDefault();
+
             clCanvas();
             window.cancelAnimationFrame(stopGame);
         }
 
-        if (event.keyCode == 66) {
-
-            // shoot edits a global static variable with the shoot time after it shoots,
-            // cooledDown checks if the current time is greater than that global variable plus the delay.
-
-            if (cooledDown()) {
-                shoot();
-            }
-        }
-    });
+    });//
 
     // Game loop
     main();
@@ -232,7 +233,6 @@ let cooledDown = function() {
         return false;
     }
 }
-
 // Changes the cool down meter every frame. Async implementation if time permits
 let coolDownMechanics = function () {
 
@@ -255,7 +255,7 @@ function shoot() {
 
     projectiles[projectiles.length] = bullet;
 
-    cooldown_bar = 10;
+    cooldown_bar = 6;
 
 }
 
@@ -463,6 +463,10 @@ function input() {
             + vector.move.x * Math.sin(Math.PI/vector.move.rSpd)
         );
     }
+     if (keys.shoot && cooledDown()) {
+         shoot();
+     }
+
 }
 
 //function for layer based collision detection
