@@ -107,7 +107,7 @@ window.onload = setup;
  */
 window.onkeydown = function(e) {
 
-    var kc = e.keyCode;
+    let kc = e.keyCode;
 
     if (kc === 65) {
         keys.left = true;
@@ -146,7 +146,6 @@ window.onkeyup = function(e) {
 
 }
 
-
 // couple the game loop to the browser event loop
 window.main = function () {
     stopGame = window.requestAnimationFrame(main);
@@ -155,7 +154,6 @@ window.main = function () {
     update();
     render();
 }
-
 
 // setup method to load everything sequentially before the game starts.
 function setup() {
@@ -217,6 +215,18 @@ let cooledDown = function() {
     }
 }
 
+// Changes the cool down meter every frame. Async implementation if time permits
+let coolDownMechanics = function () {
+
+    cooldown_bar -=1;
+
+    if (cooldown_bar < 0) {
+        cooldown_bar = 0;
+    }
+
+
+}
+
 function shoot() {
 
     const bulletDirX = vector.move.x;
@@ -230,7 +240,6 @@ function shoot() {
     cooldown_bar = 18;
 
 }
-
 
 function update() {
     //console.log('update');
@@ -253,11 +262,7 @@ function update() {
     }
     */
 
-    cooldown_bar -=1;
-
-    if (cooldown_bar < 0) {
-    cooldown_bar = 0;
-    }
+    coolDownMechanics();
     projectileMechanics();
 
     input();
