@@ -482,6 +482,8 @@ function collisionCheck(circle1, circle2) {
 
 }
 
+//
+
 // Code for propagating all the projectiles
 function projectileMechanics() {
     projectiles.forEach(function(p) {
