@@ -5,16 +5,34 @@
     @module: Advanced Game Design
  */
 
+
+
+// if objects are collide-able, must implement size in pixels
+
 let player = {
     x : 400,
     y : 400,
     speed : 50,
     colliding : false,
+    size : 100,
 
     toString : function () {
         return "( " + this.x + ", "  + this.y + " )";
     }
 }
+
+let enemy = {
+    x : 4000,
+    y : 3500,
+    speed : 50,
+    colliding : false,
+    size : 150,
+
+    toString : function () {
+        return "( " + this.x + ", "  + this.y + " )";
+    }
+}
+
 
 /*
     @members:
@@ -237,7 +255,7 @@ function shoot() {
 
     projectiles[projectiles.length] = bullet;
 
-    cooldown_bar = 18;
+    cooldown_bar = 10;
 
 }
 
@@ -302,7 +320,7 @@ function draw() {
 function drawPlayer() {
 
     ctx.beginPath();
-    ctx.arc(player.x, player.y, 100, 0,2 * Math.PI);
+    ctx.arc(player.x, player.y, player.size, 0,2 * Math.PI);
     ctx.fillStyle = '#739cff';
     ctx.fill();
     ctx.closePath();
@@ -324,7 +342,7 @@ function drawVector() {
 }
 function drawEnemy() {
     ctx.beginPath();
-    ctx.arc(3000, 3000, 200, 0,(2 * Math.PI) - Math.PI/2.2);
+    ctx.arc(enemy.x, enemy.y, enemy.size, 0,(2 * Math.PI) - Math.PI/2.2);
     ctx.strokeStyle = 'darkslategrey';
     ctx.lineWidth = 100;
     ctx.stroke();
@@ -448,7 +466,15 @@ function input() {
 }
 
 //function for layer based collision detection
-function collisionCheck() {
+function collisionCheck(circle1, circle2) {
+
+    let dx = circle1.x - circle2.x;
+    let dy = circle1.y - circle2.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < circle1.size + circle2.size) {
+        // collision detected!
+    }
 
 }
 
